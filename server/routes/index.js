@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose-q')(require('mongoose'));
-var User = require('../models/dog.js');
-var Event = require('../models/user.js');
+var Dog = require('../models/dog.js');
+var User = require('../models/user.js');
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -23,10 +23,30 @@ router.post('/users', function(req, res, next) {
     .done();
 });
 
+router.get('/users', function (req, res, next) {
+    User.findQ()
+    .then(function(response) {
+        res.json(response);
+    })
+    .catch (function(err) {
+        res.send({"ERROR": err});
+    });
+});
+
+router.get('/dogs', function (req, res, next) {
+    Dog.findQ()
+    .then (function (response) {
+        res.json(response);
+    })
+    .catch (function(err) {
+        res.json(response);
+    });
+});
+
 //save a new event
-router.post('/events', function(req, res, next) {
-    var newEvent = new Event(req.body);
-    newEvent.saveQ()
+router.post('/dogs', function(req, res, next) {
+    var newDog = new Dog(req.body);
+    newDog.saveQ()
     .then(function(result) {
         res.json(result);
     })
@@ -36,15 +56,15 @@ router.post('/events', function(req, res, next) {
 });
 
 //save an event to a user
-router.put('/user/:userid/events', function(req, res, next) {
-    var newEvent = new Event(req.body);
-    newEvent.saveQ();
+router.post('/user/:userid/dogs', function(req, res, next) {
+    var newDog = new Dog(req.body);
+    newDog.saveQ();
 
     // var event = req.body.event;
-
-    var update = { $push : {events : newEvent}};
-    var options = {new:true};
     var id = req.params.userid;
+    var update = { $push : {dogs : newDog}};
+    var options = {new:true};
+
 
     User.findByIdAndUpdateQ(id, update, options)
     .then(function(result) {
@@ -57,15 +77,21 @@ router.put('/user/:userid/events', function(req, res, next) {
 
 
 //list a users events
-router.get('/user/:userid/events', function(req, res, next) {
-    User.findByIdQ(req.params.id)
-    .populate('events')
-    .populate('comments')
+router.get('/user/:userid/dogs', function(req, res, next) {
+    User.findById(req.params.userid)
+    .populate('dogs')
     .exec(function(err, user) {
         if(err) {
+            console.log(err)
             res.send(err);
         } else {
-            res.json(user.events);
+            console.log(user)
+            res.json(user.dogs);
         }
     });
+});
+
+router.delete('/user/:userid/dogs', function (req, res, next) {
+    Dog.findByIdRemoveQ(req.params.userid)
+    .then()
 });

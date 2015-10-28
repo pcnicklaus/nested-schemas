@@ -1,9 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var User = new User ({
+var User = new Schema ({
   name: String,
-  city: String,
   dogs: [{type: Schema.Types.ObjectId, ref: 'dogs'}]
 });
 

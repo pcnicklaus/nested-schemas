@@ -6,12 +6,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var swig = require('swig');
+var mongoose = require('mongoose');
 
 
 // *** routes *** //
 var routes = require('./routes/index.js');
 
-mongoose.connect('mongodb://localhost:3000/dog-share');
+mongoose.connect('mongodb://localhost/dog-share');
 
 // *** express instance *** //
 var app = express();
